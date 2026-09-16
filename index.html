@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stellar en Criollo</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #060811;
+    --bg-panel: #0d1120;
+    --bg-panel-2: #121729;
+    --line: #232a44;
+    --ink: #edf1fb;
+    --ink-dim: #97a1c2;
+    --ink-faint: #5c6588;
+    --cyan: #2fe6c9;
+    --cyan-dim: #17a893;
+    --magenta: #ff5fd0;
+    --gold: #ffcf6e;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  body {
+    font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .mono {
+    font-family: "Space Mono", ui-monospace, "SF Mono", monospace;
+  }
+
+  /* ---------- deck chrome ---------- */
+
+  .deck {
+    position: relative;
+    width: 100%;
+    height: 100dvh;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(47,230,201,0.10), transparent 42%),
+      radial-gradient(circle at 88% 82%, rgba(255,95,208,0.09), transparent 46%),
+      var(--bg);
+  }
+
+  .railtrack {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--line);
+    z-index: 5;
+  }
+  .rail {
+    height: 100%;
+    background: linear-gradient(90deg, var(--magenta), var(--cyan) 45%, var(--gold) 80%, var(--magenta));
+    background-size: 220% 100%;
+    animation: railmove 7s linear infinite;
+    width: 0%;
+    transition: width .4s ease;
+  }
+  @keyframes railmove { from { background-position: 0 0; } to { background-position: -220% 0; } }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 7vh 9vw 9vh;
+  }
+  .slide.active { display: flex; }
+
+  .eyebrow {
+    font-family: "Space Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-size: clamp(.7rem, 1vw, .85rem);
+    color: var(--cyan);
+    margin: 0 0 1.4rem;
+  }
+  .eyebrow.magenta { color: var(--magenta); }
+  .eyebrow.gold { color: var(--gold); }
+
+  h1.title {
+    font-size: clamp(2.2rem, 5.2vw, 4.4rem);
+    line-height: 1.05;
+    margin: 0 0 1.1rem;
+    text-wrap: balance;
+    font-weight: 700;
+  }
+  h2.title { font-size: clamp(1.7rem, 3.6vw, 3rem); line-height: 1.1; margin: 0 0 1rem; text-wrap: balance; font-weight: 700; }
+
+  p.lede {
+    font-size: clamp(1.05rem, 1.7vw, 1.5rem);
+    line-height: 1.55;
+    color: var(--ink-dim);
+    max-width: 46ch;
+    margin: 0;
+  }
+
+  .accent { color: var(--cyan); }
+  .accent-m { color: var(--magenta); }
+  .accent-g { color: var(--gold); }
+
+  /* ---------- reusable pieces ---------- */
+
+  .bignum {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 1;
+    color: var(--cyan);
+    margin-bottom: .6rem;
+  }
+
+  .rowset {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 1.1rem;
+    margin-top: 2.2rem;
+    max-width: 1100px;
+  }
+  .ledger-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+  .ledger-card .name {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    color: var(--ink);
+  }
+  .ledger-card .desc {
+    font-size: clamp(.85rem, 1.05vw, 1rem);
+    color: var(--ink-dim);
+    line-height: 1.45;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4vw;
+    align-items: center;
+    max-width: 1200px;
+  }
+
+  .diagram {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    max-width: 380px;
+    justify-self: center;
+  }
+
+  .pause-slide {
+    align-items: center;
+    text-align: center;
+  }
+  .pause-slide .bignum { color: var(--gold); }
+  .pause-slide h2 { max-width: 30ch; margin-left: auto; margin-right: auto; }
+
+  .qcard {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1rem 1.1rem;
+    max-width: 480px;
+  }
+  .qcard .bar {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--magenta), var(--cyan) 60%, var(--gold));
+    margin-bottom: .8rem;
+  }
+  .qcard .row { display:flex; justify-content:space-between; align-items:center; margin-bottom:.55rem; }
+  .qcard .brand { font-family:"Space Mono",monospace; font-weight:700; font-size:.85rem; }
+  .qcard .brand span { color: var(--cyan); }
+  .qcard .pill { font-family:"Space Mono",monospace; font-size:.62rem; text-transform:uppercase; letter-spacing:.08em; background: rgba(47,230,201,0.12); color: var(--cyan); padding:.2rem .5rem; border-radius:2px; }
+  .qcard .questline { border:1px solid var(--line); background:var(--bg-panel-2); padding:.6rem .7rem; border-radius:4px; display:flex; justify-content:space-between; align-items:center; font-size:.78rem; color: var(--ink-dim); }
+  .qcard .questline b { color: var(--ink); font-weight: 600; }
+  .qcard .questline em { font-style: normal; color: var(--cyan); font-family:"Space Mono",monospace; font-size:.68rem; }
+
+  .keytakes { display:flex; flex-direction:column; gap: 1rem; margin-top: 1.8rem; max-width: 640px; }
+  .keytakes .kt { display:flex; gap: 1rem; align-items:flex-start; }
+  .keytakes .kt .n { font-family:"Space Mono",monospace; font-weight:700; color: var(--magenta); font-size: 1.1rem; min-width: 1.6rem; }
+  .keytakes .kt .t { font-size: clamp(1rem, 1.4vw, 1.2rem); color: var(--ink); line-height:1.4; }
+
+  /* nav + footer */
+  .navhint {
+    position: absolute;
+    bottom: 2.2vh; left: 9vw;
+    font-family: "Space Mono", monospace;
+    font-size: .7rem;
+    color: var(--ink-faint);
+    letter-spacing: .04em;
+    z-index: 5;
+  }
+  .counter {
+    position: absolute;
+    bottom: 2.2vh; right: 9vw;
+    font-family: "Space Mono", monospace;
+    font-size: .78rem;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    z-index: 5;
+  }
+  .counter .now { color: var(--cyan); }
+
+  .arrows { position:absolute; top:0; bottom:0; width:14%; z-index:6; cursor:pointer; }
+  .arrows.left { left:0; } .arrows.right { right:0; }
+
+  .planet {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(0px);
+    opacity: .5;
+    z-index: 0;
+  }
+
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rail { animation: none; background-position: 0 0; }
+  }
+
+  .qtag {
+    display: inline-block;
+    align-self: flex-start;
+    width: fit-content;
+    font-family: "Space Mono", monospace;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    padding: .32rem .75rem;
+    border-radius: 3px;
+    margin-bottom: 1.3rem;
+  }
+  .qtag.q { background: rgba(47,230,201,0.13); color: var(--cyan); }
+  .qtag.a { background: rgba(255,207,110,0.15); color: var(--gold); }
+
+  .codebox {
+    font-family: "Space Mono", monospace;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1.1rem 1.3rem;
+    color: var(--cyan);
+    font-size: clamp(.82rem, 1.15vw, 1.02rem);
+    max-width: 640px;
+    margin-top: 1.6rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+
+  .speaker {
+    margin-top: 2.4rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--line);
+    max-width: 46ch;
+  }
+  .speaker .name {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    color: var(--ink);
+    margin-bottom: .3rem;
+  }
+  .speaker .tags {
+    font-family: "Space Mono", monospace;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--ink-faint);
+  }
+
+  .callout {
+    margin-top: 1.5rem;
+    padding: 1rem 1.3rem;
+    border-left: 3px solid var(--cyan);
+    background: var(--bg-panel);
+    font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+    color: var(--ink);
+    max-width: 44ch;
+    line-height: 1.45;
+  }
+
+  .linkrow {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.2rem;
+    flex-wrap: wrap;
+  }
+  .linkrow .link {
+    font-family: "Space Mono", monospace;
+    font-size: clamp(.88rem, 1.05vw, 1.02rem);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    background: var(--bg-panel);
+    padding: .6rem 1rem;
+    border-radius: 4px;
+  }
+  .linkrow .link span { color: var(--cyan); }
+
+  .flowchart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    justify-self: center;
+  }
+  .fbox {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: 1.1rem;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1rem 2rem;
+    color: var(--ink);
+    min-width: 220px;
+    text-align: center;
+  }
+  .fbox.accent-border { border-color: var(--cyan); color: var(--cyan); }
+  .farrow { color: var(--ink-faint); font-size: 1.3rem; }
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Manrope:wght@400;500;700;800&display=swap">
+</head>
+<body>
+<div class="deck">
+  <div class="railtrack"><div class="rail" id="rail"></div></div>
+  <div id="stage"></div>
+  <div class="arrows left" onclick="go(-1)"></div>
+  <div class="arrows right" onclick="go(1)"></div>
+  <div class="navhint">← / → para avanzar</div>
+  <div class="counter"><span class="now" id="cnow">01</span> / <span id="ctotal">00</span></div>
+</div>
+
+<script>
+const slides = [];
+
+function slide(html, opts={}) {
+  slides.push({ html, ...opts });
+}
+
+// 1 — título
+slide(`
+  <div class="eyebrow">Argentina Builder Challenge · Office Hours 3</div>
+  <h1 class="title">Stellar,<br><span class="accent">en criollo</span>.</h1>
+  <p class="lede">Fundamentos, qué se está construyendo de verdad, y dónde practicarlo.</p>
+  <div class="speaker">
+    <div class="name">María Elisa Araya — Eli</div>
+    <div class="tags">Builder · Smart Contracts · Producto</div>
+  </div>
+`);
+
+// 2 — quién soy
+slide(`
+  <div class="eyebrow">Bloque 1 · Arrancamos</div>
+  <h2 class="title">¿Quién soy?</h2>
+`);
+
+// 3 — mi forma de construir
+slide(`
+  <div class="eyebrow">Bloque 1 · Arrancamos</div>
+  <h2 class="title">¿Esto lo usaría alguien?</h2>
+  <p class="lede mono">problema → producto → código</p>
+`);
+
+// 4 — por qué Stellar
+slide(`
+  <div class="eyebrow">Bloque 1 · Arrancamos</div>
+  <h2 class="title">¿Por qué Stellar?</h2>
+`);
+
+// 5 — qué es blockchain
+slide(`
+  <div class="eyebrow">Bloque 2 · Primero el mapa</div>
+  <h2 class="title">¿Qué es una blockchain?</h2>
+`);
+
+// 6 — es cripto?
+slide(`
+  <div class="eyebrow">Bloque 2 · Primero el mapa</div>
+  <h2 class="title">¿Blockchain es cripto?</h2>
+  <div class="bignum accent">No.</div>
+`);
+
+// 7 — Bitcoin
+slide(`
+  <div class="eyebrow">Bloque 2 · Primero el mapa</div>
+  <div class="bignum accent-g">Bitcoin</div>
+  <h2 class="title">Valor digital, sin que un banco lleve tu cuenta.</h2>
+`);
+
+// 8 — qué es Stellar
+slide(`
+  <div class="eyebrow magenta">Bloque 3 · Stellar sin humo</div>
+  <h2 class="title">Una red pensada para <span class="accent-m">mover y representar valor</span>.</h2>
+  <p class="lede">Pagos. Activos digitales. Emisión. Infraestructura financiera.</p>
+`);
+
+// 9 — cuenta
+slide(`
+  <div class="eyebrow magenta">Bloque 3 · Stellar sin humo</div>
+  <div class="bignum">G...</div>
+  <h2 class="title">Clave pública, clave secreta.</h2>
+  <p class="lede">La secreta no se la muestran a nadie.</p>
+`);
+
+// 10 — XLM
+slide(`
+  <div class="eyebrow magenta">Bloque 3 · Stellar sin humo</div>
+  <div class="bignum accent-m">XLM</div>
+  <h2 class="title">El combustible de la red.</h2>
+`);
+
+// 11 — payment
+slide(`
+  <div class="eyebrow magenta">Bloque 3 · Stellar sin humo</div>
+  <h2 class="title">Una operación llamada <span class="mono accent-m">payment</span>.</h2>
+  <p class="lede">Mueve XLM o cualquier otro asset.</p>
+`);
+
+// 12 — assets + trustline
+slide(`
+  <div class="eyebrow magenta">Bloque 3 · Stellar sin humo</div>
+  <h2 class="title">Trustline</h2>
+  <div class="callout">Esta cuenta está preparada para mantener este asset.</div>
+`);
+
+// 13 — smart contracts
+slide(`
+  <div class="eyebrow gold">Bloque 4 · Y ahora sí: Soroban</div>
+  <h2 class="title">"Yo quiero programar."</h2>
+`);
+
+// 14 — soroban con código
+slide(`
+  <div class="eyebrow gold">Bloque 4 · Y ahora sí: Soroban</div>
+  <h2 class="title">Soroban</h2>
+  <div class="codebox">#[contract]                 // contrato
+pub struct Contract;
+
+#[contractimpl]
+impl Contract {
+  pub fn increment(env: Env) -> u32 { // función
+    let mut n = env.storage()         // storage
+      .instance().get(&K).unwrap_or(0);
+    env.storage().instance().set(&K, &(n + 1));
+    n + 1
+  }
+}
+
+client.increment();                   // invocación
+
+#[test]                               // test
+fn test_increment() { ... }</div>
+`);
+
+// 15 — por qué hay tantas blockchains
+slide(`
+  <div class="eyebrow gold">Bloque 5 · Bajamos a tierra</div>
+  <h2 class="title">¿Por qué hay tantas blockchains?</h2>
+`);
+
+// 16 — síndrome de programarlo todo
+slide(`
+  <div class="eyebrow gold">Bloque 5 · Bajamos a tierra</div>
+  <h2 class="title">Queremos programar todo.</h2>
+  <p class="lede mono">la wallet · el bridge · el swap · el picaporte</p>
+`);
+
+// 17 — antes de construir: mirar
+slide(`
+  <div class="eyebrow gold">Bloque 5 · Bajamos a tierra</div>
+  <h2 class="title">¿X ya existe?</h2>
+`);
+
+// 18 — integration track
+slide(`
+  <div class="eyebrow magenta">Bloque 6 · Hacemos esto real</div>
+  <h2 class="title">El Integration Track del Stellar Community Fund</h2>
+  <p class="lede">No es una lista de ganadores. Es un catálogo de piezas ya construidas.</p>
+`);
+
+// helper for category slides
+function categorySlide(title, items) {
+  const cards = items.map(i => `
+    <div class="ledger-card">
+      <div class="name">${i.n}</div>
+      <div class="desc">${i.d}</div>
+    </div>
+  `).join("");
+  slide(`
+    <div class="eyebrow magenta">Bloque 6 · Hacemos esto real</div>
+    <h2 class="title">${title}</h2>
+    <div class="rowset">${cards}</div>
+  `);
+}
+
+// 19 — on/off ramp
+categorySlide("Convertir entre plata real y cripto", [
+  { n: "MoneyGram", d: "Efectivo dentro y fuera, con rieles de Stellar por detrás." },
+  { n: "Bridge", d: "El caño por donde una empresa mueve valor entre cuentas, liquidando en Stellar." },
+  { n: "Mercuryo", d: "Fiat ↔ cripto con el cumplimiento regulatorio ya resuelto." },
+]);
+
+// 20 — DeFi
+categorySlide("Préstamos, swaps y liquidez", [
+  { n: "Blend", d: "Pools de préstamos sobre Stellar." },
+  { n: "Soroswap", d: "Swaps agregando toda la liquidez de la red." },
+  { n: "Aquarius", d: "La plomería de liquidez del DEX." },
+]);
+
+// 21 — mover activos entre redes
+slide(`
+  <div class="eyebrow magenta">Bloque 6 · Hacemos esto real</div>
+  <h2 class="title">Mover el mismo activo entre distintas redes</h2>
+  <div class="rowset">
+    <div class="ledger-card"><div class="name">Allbridge</div><div class="desc">Trae un token de otra red sin pasar por un exchange.</div></div>
+    <div class="ledger-card"><div class="name">Axelar</div><div class="desc">Mensajería entre redes de uso general.</div></div>
+    <div class="ledger-card"><div class="name">LayerZero</div><div class="desc">Un contrato en Stellar manda datos o tokens a otra red.</div></div>
+  </div>
+  <p class="lede" style="margin-top:1.4rem">Esto no es un indexador: eso lee datos de tu propia app.</p>
+`);
+
+// 22 — wallets
+categorySlide("Cómo entra la gente a tu app", [
+  { n: "Freighter", d: "La wallet oficial de la Stellar Development Foundation." },
+  { n: "Stellar Wallets Kit", d: "Un toolkit para conectar cualquier wallet compatible." },
+  { n: "Privy", d: "Onboarding con email o redes sociales, sin que se note la cripto." },
+]);
+
+// 23 — puedo usar IA?
+slide(`
+  <div class="eyebrow gold">Bloque 7 · IA sin vender humo</div>
+  <h2 class="title">¿Puedo usar IA?</h2>
+`);
+
+// 24 — el problema
+slide(`
+  <div class="eyebrow gold">Bloque 7 · IA sin vender humo</div>
+  <h2 class="title">¿De dónde saca lo que te está diciendo?</h2>
+`);
+
+// 25 — stellar-dev-skill
+slide(`
+  <div class="eyebrow gold">Bloque 7 · IA sin vender humo</div>
+  <h2 class="title"><span class="mono accent-g">stellar-dev-skill</span></h2>
+  <div class="codebox">/plugin marketplace add stellar/stellar-dev-skill
+/plugin install stellar-dev@stellar-dev</div>
+`);
+
+// 26 — raven
+slide(`
+  <div class="eyebrow gold">Bloque 7 · IA sin vender humo</div>
+  <h2 class="title">Raven</h2>
+  <p class="lede">El complemento para consultas en vivo. Esto es conocimiento ya cargado.</p>
+`);
+
+// 27 — basta de hablar de mí
+slide(`
+  <div class="eyebrow">Bloque 8 · Ahora ustedes</div>
+  <h2 class="title">Ahora quiero ver qué construyeron ustedes.</h2>
+`);
+
+// 28 — cinco cosas
+slide(`
+  <div class="eyebrow">Cierre</div>
+  <h2 class="title">Si se llevan cinco cosas</h2>
+  <div class="keytakes">
+    <div class="kt"><div class="n">01</div><div class="t">Entiendan primero el mapa. Después los términos.</div></div>
+    <div class="kt"><div class="n">02</div><div class="t">Cuenta, XLM, assets, payments y trustlines son parte de la base.</div></div>
+    <div class="kt"><div class="n">03</div><div class="t">Soroban es donde entra la lógica de smart contracts.</div></div>
+    <div class="kt"><div class="n">04</div><div class="t">Antes de construir algo, miren qué existe.</div></div>
+    <div class="kt"><div class="n">05</div><div class="t">Si usan IA, no le crean porque habla lindo. Revisen qué está usando.</div></div>
+    <div class="kt"><div class="n">+</div><div class="t">Si se traban, pregunten. Eso es literalmente cómo se aprende.</div></div>
+  </div>
+`);
+
+// 29 — gracias
+slide(`
+  <div class="bignum accent">Gracias.</div>
+  <h2 class="title">¿Quién está en Genesis y quién en Scale?</h2>
+  <div class="linkrow">
+    <div class="link">GitHub → <span>mariaelisaaraya</span></div>
+    <div class="link">X → <span>ar3lisa</span></div>
+    <div class="link">Podcast → <span>Agarrá una silla y vení</span></div>
+  </div>
+`);
+// ---------- engine ----------
+let i = 0;
+const stage = document.getElementById("stage");
+slides.forEach((s, idx) => {
+  const el = document.createElement("div");
+  el.className = "slide" + (s.pause ? " pause-slide" : "");
+  el.innerHTML = s.html;
+  el.dataset.idx = idx;
+  stage.appendChild(el);
+});
+document.getElementById("ctotal").textContent = String(slides.length).padStart(2,"0");
+
+function render() {
+  document.querySelectorAll(".slide").forEach((el,idx) => {
+    el.classList.toggle("active", idx === i);
+  });
+  document.getElementById("cnow").textContent = String(i+1).padStart(2,"0");
+  document.getElementById("rail").style.width = (((i+1)/slides.length)*100) + "%";
+}
+function go(d) {
+  i = Math.min(slides.length-1, Math.max(0, i+d));
+  render();
+}
+window.addEventListener("keydown", (e) => {
+  if (["ArrowRight","PageDown"," "].includes(e.key)) { go(1); e.preventDefault(); }
+  if (["ArrowLeft","PageUp"].includes(e.key)) { go(-1); e.preventDefault(); }
+});
+render();
+
+// decorative ledger diagram (canvas, no hand-authored SVG paths)
+(function () {
+  const host = document.getElementById("ledger-diagram");
+  if (!host) return;
+  const canvas = document.createElement("canvas");
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
+  host.appendChild(canvas);
+  const dpr = window.devicePixelRatio || 1;
+  const size = 380;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  const nodes = [
+    [190,60],[320,140],[300,290],[150,330],[45,240],[55,110],[190,190]
+  ];
+  ctx.strokeStyle = "rgba(151,161,194,0.35)";
+  ctx.lineWidth = 1;
+  for (let a = 0; a < nodes.length; a++) {
+    for (let b = a+1; b < nodes.length; b++) {
+      ctx.beginPath();
+      ctx.moveTo(nodes[a][0], nodes[a][1]);
+      ctx.lineTo(nodes[b][0], nodes[b][1]);
+      ctx.stroke();
+    }
+  }
+  nodes.forEach(([x,y], idx) => {
+    const isCenter = idx === nodes.length - 1;
+    ctx.beginPath();
+    ctx.arc(x, y, isCenter ? 10 : 7, 0, Math.PI*2);
+    ctx.fillStyle = isCenter ? "#ffcf6e" : (idx % 2 === 0 ? "#2fe6c9" : "#ff5fd0");
+    ctx.fill();
+  });
+})();
+</script>
+</body>
+</html>
