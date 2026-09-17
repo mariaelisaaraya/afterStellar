@@ -504,7 +504,7 @@ slide(`
 function categorySlide(title, items) {
   const cards = items.map(i => `
     <div class="ledger-card">
-      <div class="name">${i.n}</div>
+      <div class="name">${i.u ? `<a href="${i.u}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${i.n} ↗</a>` : i.n}</div>
       <div class="desc">${i.d}</div>
     </div>
   `).join("");
@@ -524,9 +524,9 @@ categorySlide("Convertir entre plata real y cripto", [
 
 // 20 — DeFi
 categorySlide("Préstamos, swaps y liquidez", [
-  { n: "Blend", d: "Pools de préstamos sobre Stellar." },
-  { n: "Soroswap", d: "Swaps agregando toda la liquidez de la red." },
-  { n: "Aquarius", d: "La plomería de liquidez del DEX." },
+  { n: "Blend", u: "https://blend.capital/", d: "Pools de préstamos sobre Stellar." },
+  { n: "Soroswap", u: "https://soroswap.finance/", d: "Swaps agregando toda la liquidez de la red." },
+  { n: "Aquarius", u: "https://aqua.network/", d: "La plomería de liquidez del DEX." },
 ]);
 
 // 21 — mover activos entre redes
@@ -534,18 +534,17 @@ slide(`
   <div class="eyebrow magenta">Bloque 6 · Hacemos esto real</div>
   <h2 class="title">Mover el mismo activo entre distintas redes</h2>
   <div class="rowset">
-    <div class="ledger-card"><div class="name">Allbridge</div><div class="desc">Trae un token de otra red sin pasar por un exchange.</div></div>
-    <div class="ledger-card"><div class="name">Axelar</div><div class="desc">Mensajería entre redes de uso general.</div></div>
-    <div class="ledger-card"><div class="name">LayerZero</div><div class="desc">Un contrato en Stellar manda datos o tokens a otra red.</div></div>
+    <div class="ledger-card"><div class="name"><a href="https://allbridge.io/classic/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Allbridge ↗</a></div><div class="desc">Trae un token de otra red sin pasar por un exchange.</div></div>
+    <div class="ledger-card"><div class="name"><a href="https://www.axelar.network/blog/axelar-stellar-integration" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Axelar ↗</a></div><div class="desc">Mensajería entre redes de uso general.</div></div>
+    <div class="ledger-card"><div class="name"><a href="https://layerzero.network/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">LayerZero ↗</a></div><div class="desc">Un contrato en Stellar manda datos o tokens a otra red.</div></div>
   </div>
-  <p class="lede" style="margin-top:1.4rem">Esto no es un indexador: eso lee datos de tu propia app.</p>
 `);
 
 // 22 — wallets
 categorySlide("Cómo entra la gente a tu app", [
-  { n: "Freighter", d: "La wallet oficial de la Stellar Development Foundation." },
-  { n: "Stellar Wallets Kit", d: "Un toolkit para conectar cualquier wallet compatible." },
-  { n: "Privy", d: "Onboarding con email o redes sociales, sin que se note la cripto." },
+  { n: "Freighter", u: "https://freighter.app/", d: "La wallet oficial de la Stellar Development Foundation." },
+  { n: "Stellar Wallets Kit", u: "https://stellarwalletskit.dev/", d: "Un toolkit para conectar cualquier wallet compatible." },
+  { n: "Privy", u: "https://www.privy.io/", d: "Onboarding con email o redes sociales, sin que se note la cripto." },
 ]);
 
 // 23 — puedo usar IA?
