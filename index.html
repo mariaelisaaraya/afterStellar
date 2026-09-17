@@ -218,8 +218,28 @@
   }
   .counter .now { color: var(--cyan); }
 
-  .arrows { position:absolute; top:0; bottom:0; width:14%; z-index:6; cursor:pointer; }
-  .arrows.left { left:0; } .arrows.right { right:0; }
+  .arrows { position:absolute; top:0; bottom:0; width:14%; z-index:6; cursor:pointer; display:flex; align-items:center; }
+  .arrows.left { left:0; justify-content:flex-start; padding-left:2vw; }
+  .arrows.right { right:0; justify-content:flex-end; padding-right:2vw; }
+  .arrows::after {
+    content: "";
+    width: 2.6rem; height: 2.6rem;
+    border-radius: 50%;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    opacity: .8;
+    transition: opacity .2s ease, border-color .2s ease, background .2s ease;
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Space Mono", monospace;
+    font-size: 1.3rem;
+    color: var(--cyan);
+  }
+  .arrows.left::after { content: "←"; }
+  .arrows.right::after { content: "→"; }
+  .arrows:hover::after { opacity: 1; border-color: var(--cyan); background: rgba(47,230,201,0.12); }
+
+  .slide a[target="_blank"] { transition: opacity .15s ease; }
+  .slide a[target="_blank"]:hover { text-decoration: underline !important; opacity: .75; }
 
   .planet {
     position: absolute;
@@ -363,7 +383,6 @@ function slide(html, opts={}) {
 slide(`
   <div class="eyebrow">Argentina Builder Challenge · Office Hours 3</div>
   <h1 class="title">Stellar,<br><span class="accent">en criollo</span>.</h1>
-  <p class="lede">Fundamentos, qué se está construyendo de verdad, y dónde practicarlo.</p>
   <div class="speaker">
     <div class="name">Eli</div>
     <div class="tags">Builder · Smart Contracts · Producto</div>
@@ -374,6 +393,15 @@ slide(`
 slide(`
   <div class="eyebrow">Bloque 1 · Arrancamos</div>
   <h2 class="title">¿Quién soy?</h2>
+  <div style="margin-top:.9rem; display:flex; flex-direction:column; gap:.4rem; max-width:900px; font-size:.82rem; color:var(--ink-dim);">
+    <div><a href="https://github.com/BuenDia-Builders" target="_blank" rel="noopener" style="font-weight:700; color:var(--ink); text-decoration:none;">Buen Día Builders ↗</a> · Productos, código y proyectos</div>
+    <div><a href="https://github.com/BuenDia-Builders/codigofutura" target="_blank" rel="noopener" style="font-weight:700; color:var(--ink); text-decoration:none;">Código Futura ↗</a> · Builders & Founders Journey, con Stellar Development Foundation y BAF</div>
+    <div><span style="font-weight:700; color:var(--ink);">Guías y herramientas open source</span> · Usadas en hackathons oficiales</div>
+    <div><a href="https://github.com/BuenDia-Builders/Lendara-Protocol" target="_blank" rel="noopener" style="font-weight:700; color:var(--ink); text-decoration:none;">Lendara Protocol ↗</a> · SDK / paquete npm de Stellar, con Anouk Rimola y Karen Gianetto</div>
+    <div><a href="https://github.com/BuenDia-Builders/stellar-guide-vendimia-tech" target="_blank" rel="noopener" style="font-weight:700; color:var(--ink); text-decoration:none;">Stellar Guide — Vendimia Tech ↗</a> · Guía práctica para builders con Stellar y Soroban</div>
+    <div><a href="https://github.com/mariaelisaaraya/stellar-map" target="_blank" rel="noopener" style="font-weight:700; color:var(--ink); text-decoration:none;">Stellar Map ↗</a> · Onboarding al ecosistema y modelos mentales</div>
+  </div>
+  <div style="margin-top:1rem;"><a href="https://github.com/mariaelisaaraya" target="_blank" rel="noopener" class="mono accent" style="text-decoration:none; font-size:.85rem;">GitHub → mariaelisaaraya ↗</a></div>
 `);
 
 // 3 — mi forma de construir
