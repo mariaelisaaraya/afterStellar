@@ -568,7 +568,14 @@ slide(`
 /plugin install stellar-dev@stellar-dev</div>
   <div class="ledger-card" style="margin-top:1.6rem; max-width:620px;">
     <div class="name"><a href="https://github.com/mariaelisaaraya/stellar-security-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">Soroban Common Mistakes ↗</a></div>
-    <div class="desc">La hice yo. Revisa un contrato Soroban contra 23 errores de seguridad recurrentes: autorización faltante, storage y TTL, overflow, panics mal manejados. Trae checklist, PR template y un workflow de CI. En inglés y español.</div>
+    <div class="desc" style="display:flex; flex-direction:column; gap:.55rem;">
+      <p style="margin:0; color:var(--ink); font-weight:700;">Los mismos errores. Una y otra vez.</p>
+      <p style="margin:0;">Armé esta herramienta porque me cansé de encontrar los mismos errores de seguridad repetidos en auditorías de contratos Soroban.</p>
+      <p style="margin:0;">Así que los convertí en una revisión que podés hacer <strong style="color:var(--ink);">antes</strong> de llegar a la auditoría.</p>
+      <p style="margin:0;">El skill revisa <strong style="color:var(--ink);">23 patrones de errores comunes</strong>, desde autorización, storage y TTL hasta problemas de aritmética, validaciones y panics.</p>
+      <p style="margin:0;">También incluye <strong style="color:var(--ink);">checklist, PR template y workflow de CI</strong>, para que la seguridad no quede para el final del proyecto.</p>
+      <p style="margin:0; color:var(--ink); font-weight:700;">Disponible en inglés y español.</p>
+    </div>
   </div>
 `);
 
